@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+:root {
+  --marginY: 6rem;
+}
+
+$bp-big: 62.5em;
+$bp-medium: 48em;
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 62.5%;
+
+  @media only screen and (max-width: $bp-medium) {
+    font-size: 50%;
+  }
+}
+
+body {
+  min-height: 50rem;
+  font-family: 'Poppins', sans-serif;
+  background-image: linear-gradient(to right bottom, #f01351, #f06f5e);
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-height: calc(100vh - var(--marginY));
+
+  @media only screen and (max-width: $bp-big) {
+    min-height: 100vh;
+  }
+}
