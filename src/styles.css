@@ -46,8 +46,7 @@ ul {
 .header {
   font-size: 1.4rem; }
   .header__input {
-    font-size: inherit;
-    transition: 0.3s ease; }
+    font-size: inherit; }
   .header__icon {
     height: 2rem;
     width: 2rem;
