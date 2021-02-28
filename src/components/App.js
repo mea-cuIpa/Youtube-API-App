@@ -5,10 +5,17 @@ import youtube from '../API/youtube';
 import SearchBar from './SearchBar';
 import VideoList from './VideoList';
 import VideoDetail from './VideoDetail';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import '../styles.css';
 
 class App extends React.Component {
-  state = { videos: [], selectedVideo: null };
+  state = {
+    videos: [],
+    selectedVideo: null,
+    pageToken: '',
+    count: 20,
+    inputPass: '',
+  };
 
   componentDidMount() {
     this.onInputSubmit('kittisaurus lulu');
@@ -19,6 +26,7 @@ class App extends React.Component {
       .get('/search', {
         params: {
           q: input,
+          maxResults: 20,
         },
       })
       .catch(err => {
@@ -26,6 +34,9 @@ class App extends React.Component {
       })
       .catch(err => console.log(err));
 
+    this.state.pageToken = response.data.nextPageToken;
+
+    this.state.inputPass = input;
     this.setState({
       videos: response.data.items,
       selectedVideo: response.data.items[0],
@@ -34,7 +45,27 @@ class App extends React.Component {
 
   onVideoSelect = video => {
     this.setState({ selectedVideo: video });
-    console.log(video);
+  };
+
+  loadVideos = async () => {
+    this.setState({ pageToken: this.state.pageToken });
+    const response = await youtube
+      .get('/search', {
+        params: {
+          q: this.state.inputPass,
+          pageToken: this.state.pageToken,
+          maxResults: 20,
+        },
+      })
+      .catch(err => {
+        throw new Error(err.response);
+      })
+      .catch(err => console.log(err));
+
+    this.state.pageToken = response.data.nextPageToken;
+    this.setState({
+      videos: this.state.videos.concat(response.data.items),
+    });
   };
 
   render() {
@@ -48,10 +79,16 @@ class App extends React.Component {
             <VideoDetail video={this.state.selectedVideo} />
           </div>
           <div className="col-md-4 py-3">
-            <VideoList
-              onVideoSelect={this.onVideoSelect}
-              videos={this.state.videos}
-            />
+            <InfiniteScroll
+              dataLength={this.state.videos.length}
+              next={this.loadVideos}
+              hasMore={true}
+            >
+              <VideoList
+                onVideoSelect={this.onVideoSelect}
+                videos={this.state.videos}
+              />
+            </InfiniteScroll>
           </div>
         </main>
       </Container>
