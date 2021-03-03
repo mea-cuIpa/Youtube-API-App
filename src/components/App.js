@@ -13,7 +13,7 @@ class App extends React.Component {
     videos: [],
     selectedVideo: null,
     pageToken: '',
-    count: 20,
+    count: 7,
     inputPass: '',
   };
 
@@ -26,7 +26,7 @@ class App extends React.Component {
       .get('/search', {
         params: {
           q: input,
-          maxResults: 20,
+          maxResults: 7,
         },
       })
       .catch(err => {
@@ -54,7 +54,7 @@ class App extends React.Component {
         params: {
           q: this.state.inputPass,
           pageToken: this.state.pageToken,
-          maxResults: 20,
+          maxResults: 7,
         },
       })
       .catch(err => {
