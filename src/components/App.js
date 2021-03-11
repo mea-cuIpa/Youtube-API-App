@@ -13,12 +13,11 @@ class App extends React.Component {
     videos: [],
     selectedVideo: null,
     pageToken: '',
-    count: 7,
-    inputPass: '',
+    search: '',
   };
 
   componentDidMount() {
-    this.onInputSubmit('kittisaurus lulu');
+    this.onInputSubmit("the blancos we're tired");
   }
 
   onInputSubmit = async input => {
@@ -26,20 +25,25 @@ class App extends React.Component {
       .get('/search', {
         params: {
           q: input,
-          maxResults: 7,
+          maxResults: 2,
         },
       })
       .catch(err => {
-        throw new Error(err.response);
-      })
-      .catch(err => console.log(err));
+        //err > 500 ? server side : user
+        err.response
+          ? console.error(`Server responded with status ${err.response.status}`)
+          : err.request
+          ? console.error(`Can't get response ${err.request}`)
+          : console.error(
+              `Something happened in setting up the request ${err.message}`
+            );
+      });
 
-    this.state.pageToken = response.data.nextPageToken;
-
-    this.state.inputPass = input;
     this.setState({
       videos: response.data.items,
       selectedVideo: response.data.items[0],
+      pageToken: response.data.nextPageToken,
+      search: input,
     });
   };
 
@@ -48,23 +52,29 @@ class App extends React.Component {
   };
 
   loadVideos = async () => {
-    this.setState({ pageToken: this.state.pageToken });
+    const { pageToken, search } = this.state;
+
     const response = await youtube
       .get('/search', {
         params: {
-          q: this.state.inputPass,
-          pageToken: this.state.pageToken,
-          maxResults: 7,
+          q: search,
+          pageToken: pageToken,
+          maxResults: 2,
         },
       })
       .catch(err => {
-        throw new Error(err.response);
-      })
-      .catch(err => console.log(err));
+        err.response
+          ? console.error(`Server responded with status ${err.response.status}`)
+          : err.request
+          ? console.error(`Can't get response ${err.request}`)
+          : console.error(
+              `Something happened in setting up the request ${err.message}`
+            );
+      });
 
-    this.state.pageToken = response.data.nextPageToken;
     this.setState({
-      videos: this.state.videos.concat(response.data.items),
+      pageToken: response.data.nextPageToken,
+      videos: [...this.state.videos, ...response.data.items],
     });
   };
 
