@@ -25,7 +25,7 @@ class App extends React.Component {
       .get('/search', {
         params: {
           q: input,
-          maxResults: 2,
+          maxResults: 7,
         },
       })
       .catch(err => {
@@ -59,7 +59,7 @@ class App extends React.Component {
         params: {
           q: search,
           pageToken: pageToken,
-          maxResults: 2,
+          maxResults: 7,
         },
       })
       .catch(err => {
