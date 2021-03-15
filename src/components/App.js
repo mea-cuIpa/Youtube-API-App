@@ -21,7 +21,9 @@ class App extends React.Component {
   }
 
   onInputSubmit = async input => {
-    const response = await youtube
+    const {
+      data: { items, nextPageToken },
+    } = await youtube
       .get('/search', {
         params: {
           q: input,
@@ -40,9 +42,9 @@ class App extends React.Component {
       });
 
     this.setState({
-      videos: response.data.items,
-      selectedVideo: response.data.items[0],
-      pageToken: response.data.nextPageToken,
+      videos: items,
+      selectedVideo: items[0],
+      pageToken: nextPageToken,
       search: input,
     });
   };
@@ -54,7 +56,9 @@ class App extends React.Component {
   loadVideos = async () => {
     const { pageToken, search } = this.state;
 
-    const response = await youtube
+    const {
+      data: { items, nextPageToken },
+    } = await youtube
       .get('/search', {
         params: {
           q: search,
@@ -73,12 +77,14 @@ class App extends React.Component {
       });
 
     this.setState({
-      pageToken: response.data.nextPageToken,
-      videos: [...this.state.videos, ...response.data.items],
+      pageToken: nextPageToken,
+      videos: [...this.state.videos, ...items],
     });
   };
 
   render() {
+    const { videos, selectedVideo } = this.state;
+
     return (
       <Container className="p-0">
         <header className="bg-white d-flex justify-content-center align-items-center header">
@@ -86,18 +92,15 @@ class App extends React.Component {
         </header>
         <main className="bg-light d-md-flex">
           <div className="col-md-8 py-3">
-            <VideoDetail video={this.state.selectedVideo} />
+            <VideoDetail video={selectedVideo} />
           </div>
           <div className="col-md-4 py-3">
             <InfiniteScroll
-              dataLength={this.state.videos.length}
+              dataLength={videos.length}
               next={this.loadVideos}
               hasMore={true}
             >
-              <VideoList
-                onVideoSelect={this.onVideoSelect}
-                videos={this.state.videos}
-              />
+              <VideoList onVideoSelect={this.onVideoSelect} videos={videos} />
             </InfiniteScroll>
           </div>
         </main>

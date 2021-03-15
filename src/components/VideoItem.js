@@ -1,7 +1,18 @@
 import React from 'react';
 
 const VideoItem = ({ video, onVideoSelect }) => {
-  const date = new Date(video.snippet.publishedAt);
+  const {
+    snippet: {
+      publishedAt,
+      title,
+      channelTitle,
+      thumbnails: {
+        medium: { url },
+      },
+    },
+  } = video;
+
+  const date = new Date(publishedAt);
   const convertedDate =
     date.getFullYear() +
     '-' +
@@ -12,14 +23,10 @@ const VideoItem = ({ video, onVideoSelect }) => {
   return (
     <ul onClick={() => onVideoSelect(video)}>
       <li>
-        <img
-          className="w-100"
-          src={video.snippet.thumbnails.medium.url}
-          alt={video.snippet.title}
-        />
-        <h3 className="pt-2 font-weight-bolder">{video.snippet.title}</h3>
+        <img className="w-100" src={url} alt={title} />
+        <h3 className="pt-2 font-weight-bolder">{title}</h3>
         <div className="d-flex">
-          <span>{video.snippet.channelTitle}</span>
+          <span>{channelTitle}</span>
           <span className="ml-auto">{convertedDate}</span>
         </div>
         <hr></hr>
